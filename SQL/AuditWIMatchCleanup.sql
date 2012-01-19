@@ -14,4 +14,8 @@ select ((select count(*) from wfvotingeventaudit) - (select count(*) from chtoau
 select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null;
 
 -- get the count of how much of the overlap is due to a missing process
-select count(*) from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess);
+select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess);
+
+-- healing statement to remove audits that no longer have processes
+select count(*) from wfvotingeventaudit a0, (select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess)) a1 where a0.processkey=a1.processkey;
+select * from wfvotingeventaudit a0, (select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess)) a1 where a0.processkey=a1.processkey;
