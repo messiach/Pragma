@@ -11,11 +11,28 @@ select (select count(*) from chtoauditlink) as links, (select count(*) from wfvo
 select ((select count(*) from wfvotingeventaudit) - (select count(*) from chtoauditlink)) as overlap from dual;
 
 -- get the rows of the overlapping entries
-select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null;
+select * from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null;
 
 -- get the count of how much of the overlap is due to a missing process
-select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess);
+select count(*) from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess);
 
 -- healing statement to remove audits that no longer have processes
 select count(*) from wfvotingeventaudit a0, (select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess)) a1 where a0.processkey=a1.processkey;
 select * from wfvotingeventaudit a0, (select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess)) a1 where a0.processkey=a1.processkey;
+delete from wfvotingeventaudit where ida2a2 in (select ida2a2 from wfvotingeventaudit a0, (select * from (select processkey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processkey not in (select wtkey from wfprocess)) a1 where a0.processkey=a1.processkey);
+
+-- get the count of how much of the overlap is due to a missing activity
+select count(*) from (select activitykey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where activitykey not in (select wtkey from wfassignedactivity);
+
+-- healing statement to remove audits that no longer have activities
+select count(*) from wfvotingeventaudit a0, (select * from (select activitykey from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where activitykey not in (select wtkey from wfassignedactivity)) a1 where a0.activitykey=a1.activitykey;
+
+-- get the count of how much of the overlap is due to a naming conflict on the wfprocess (names don't match)
+select count(*) from (select processname from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where processname not in (select name from wfprocess);
+
+-- get the count of how much of the overlap is due to naming conflict on the wfassignedactivity (names don't match)
+select count(*) from (select activityname from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where activityname not in (select name from wfassignedactivity);
+select * from (select activityname from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where activityname not in (select name from wfassignedactivity);
+
+-- get the count of duplicate audits in the system (having the same 4 fields and timestamp)
+select count(*) from (select activityname, processname, activitykey, processkey, timestamp from wfvotingeventaudit group by activityname, processname, activitykey, processkey, timestamp having count(*) > 1); 
