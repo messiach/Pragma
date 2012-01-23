@@ -35,4 +35,11 @@ select count(*) from (select activityname from wfvotingeventaudit left outer joi
 select * from (select activityname from wfvotingeventaudit left outer join chtoauditlink on wfvotingeventaudit.ida2a2=chtoauditlink.ida3b5 where chtoauditlink.ida2a2 is null) where activityname not in (select name from wfassignedactivity);
 
 -- get the count of duplicate audits in the system (having the same 4 fields and timestamp)
-select count(*) from (select activityname, processname, activitykey, processkey, timestamp from wfvotingeventaudit group by activityname, processname, activitykey, processkey, timestamp having count(*) > 1); 
+select * from (select activityname, processname, activitykey, processkey, timestamp from wfvotingeventaudit group by activityname, processname, activitykey, processkey, timestamp having count(*) > 1); 
+
+
+-- get the number of workitems with a context - result 288
+select count(*) from WorkItem where context is not null;
+
+-- get the number of workitems without a context - result 47401
+select count(*) from WorkItem where context is null;
