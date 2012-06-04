@@ -76,7 +76,7 @@ select count(*) from epmfamilytableparameter; -- count = 40,297     (TBM)
 select count(*) from epmparameterdefinition;  -- count = 6,676      (TBM) 
 select count(*) from epmparametervalue;       -- count = 1,307,660  (TBM)
 
--- ??
+-- pro/e designated parameter to Windchill IBA mappings - supported in WBM 2.1
 select count(*) from epmparametermap;         -- count = 0
 
 -- family table relationships
@@ -92,15 +92,21 @@ select count(*) from epmoccurrencetable;      -- count = 189,767
 select count(*) from epmusesoccurrence;       -- count = 140
 
 -- wtparts
-select count(*) from wtpart;            -- count = 90,766  --> Windchill WTPart objects (TBM)
+select count(*) from wtpart;             -- count = 90,766  --> Windchill WTPart objects (TBM)
+select count(*) from wtpartusagelink;    -- count = 40,191  --> Windchill WTPart to WTPart usage links (TBM)
+select count(*) from partusesoccurrence; -- count = 173,337 --> Windchill WTPart occurrences
 
 -- baseline stats
-select count(*) from baselinemember;         -- 1,112,797
-select count(*) from managedbaseline;        -- 397
-select count(*) from epmcheckpoint;          -- 1,656
-select count(*) from maturitybaseline;       -- 2,428
-select count(*) from wtproductconfiguration; -- 50
-select count(*) from sandboxbaseline;        -- 26
-select count(*) from annotationbaseline;     -- 7
-select count(*) from wpbaseline;             -- 6
+select count(*) from baselinemember;         -- 1,112,797   (all baseline members)
+select count(*) from managedbaseline;        -- 397   (epmdocs, parts, wtdocumets)
+select count(*) from epmcheckpoint;          -- 1,656  (epdocs, epmfamilytables, parts)
+select count(*) from maturitybaseline;       -- 2,428   (parts, epmdocs, wtdocuments)
+select count(*) from wtproductconfiguration; -- 50  (parts)
+select count(*) from sandboxbaseline;        -- 26  (parts, epmdocs)
+select count(*) from annotationbaseline;     -- 7 (parts)
+select count(*) from wpbaseline;             -- 6  (change requests)
+
+
+-- representations for parts (DerivedImage)
+select count(*) from derivedimage;           -- 733,563 (epmdocs, parts)
 
